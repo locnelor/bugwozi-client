@@ -1,0 +1,23 @@
+a {
+    text-decoration: none;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.indent {
+    text-indent: 2em;
+}
+
+.ant-popover-inner-content {
+    padding: 0;
+}
