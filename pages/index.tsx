@@ -1,29 +1,22 @@
-import Link from 'next/link'
-import Page from '../layout/Page'
-import useProps from '../libs/http/useProps'
-import makeServerSideProps from '../libs/page/makeServerSideProps'
-import withPage from '../libs/page/withPage'
-import { StoreInit } from '../libs/store/interface'
+import Head from "next/head";
+import Container from "../layout/Container";
+import Page from "../layout/Page";
+import withPage from "../libs/page/withPage";
 
 
-export default withPage(Page, (props: any) => {
-  const data = useProps(props);
+export default withPage(null, () => {
+
 
   return (
-    <div >
-      <Link href="/demo">
-        <a >
-          toDemo
-        </a>
-      </Link>
-    </div>
+    <Page>
+      <Head>
+        <title>
+          {process.env.NEXT_PUBLIC_NAME}
+        </title>
+      </Head>
+      <Container>
+        123
+      </Container>
+    </Page>
   )
-})
-export const getServerSideProps = makeServerSideProps((store) => {
-  store.dispatch({
-    type: StoreInit,
-    data: {
-      a: "sbppk"
-    }
-  })
 })

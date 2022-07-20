@@ -1,9 +1,13 @@
 import HttpFetch from "./HttpFetch"
-
-
+import { AccountBasicGetUserInfo } from "./router/account/basic"
 const http = {
-    auth: {
-        login: HttpFetch.get("")
+    account: {
+        basic: {
+            getUserInfo: HttpFetch.get<AccountBasicGetUserInfo>("/account/basic/getUserInfo")
+        },
+        post: {
+            article: HttpFetch.post("/account/post/article")
+        }
     }
 }
 export default http

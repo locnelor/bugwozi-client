@@ -2,8 +2,7 @@ import { Reducer } from "redux";
 import {
     Action,
     InitialValue,
-    StoreInit,
-    StoreMerge
+    StoreActionType,
 } from "./interface";
 export const initialValue: InitialValue = {
 
@@ -17,13 +16,17 @@ const reducer: Reducer<InitialValue, Action> = (
 ) => {
 
     switch (type) {
-        case StoreInit:
+        case StoreActionType.StoreInit:
             state = data;
             break;
-        case StoreMerge:
+        case StoreActionType.StoreMerge:
             for (const key in data) {
                 (state as any)[key] = data[key];
             }
+            break;
+        case StoreActionType.SetUser:
+            state.user = data;
+            break;
     }
 
     return { ...state }

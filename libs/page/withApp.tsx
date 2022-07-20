@@ -1,9 +1,9 @@
-import { NextPageContext } from "next"
+import { NextComponentType, NextPageContext } from "next"
 import { AppContext, AppProps } from "next/app"
-import Head from "next/head"
+import { useEffect } from "react"
 import { Provider } from "react-redux"
 import makeStore from "../store"
-import { StoreType } from "../store/interface"
+import { StoreActionType, StoreType } from "../store/interface"
 
 
 
@@ -14,23 +14,35 @@ type callback = (store: StoreType, ctx: NextPageContext) => void | Promise<void>
  */
 const withApp = (
     AppComponent: React.FC<{
-        children: JSX.Element,
+        Component: NextComponentType<NextPageContext, any, {}>,
+        pageProps: any
     }>,
     callback?: callback
 ) => {
     const WithApp = ({
         Component,
-        pageProps,
+        pageProps: {
+            _pageStore,
+            ...pageProps
+        },
         _store
     }: AppProps & {
         _store: any
     }) => {
         const store = makeStore(_store)
+        useEffect(() => {
+            // console.log(_pageStore, pageProps, "pageStore");
+            store.dispatch({
+                type: StoreActionType.StoreMerge,
+                data: _pageStore
+            })
+        }, [_pageStore])
         return (
             <Provider store={store}>
-                <AppComponent>
-                    <Component {...pageProps} />
-                </AppComponent>
+                <AppComponent
+                    Component={Component}
+                    pageProps={pageProps}
+                />
             </Provider>
         )
     }
