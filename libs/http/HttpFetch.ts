@@ -1,24 +1,20 @@
-import { message } from "antd";
 import axios, { Method } from "axios";
+import { String, Union, List } from "ts-toolbelt"
 import { stringify } from "qs"
-type HttpFetchParams = { [k in string]: string };
-type HttpFetchBody = { [k in string]: any };
 const fetch = axios.create({
     withCredentials: true,
     baseURL: process.env.NEXT_PUBLIC_BASE_API
 })
-interface HttpFetchTemplate {
-    params?: HttpFetchParams,
-    body?: HttpFetchBody,
-    res?: any
-}
 let cookies = "";
+export const setCookie = (cookie: string) => {
+    cookies = cookie;
+}
 fetch.interceptors.request.use(config => {
     if (!!cookies) config.headers.cookie = cookies;
     return config;
 })
-fetch.interceptors.response.use(({ data }) => {
-    return data;
+fetch.interceptors.response.use((res) => {
+    return res;
 }, ({ response }) => {
     if (!response) return Promise.reject(null);
     const { data, status } = response;
@@ -27,63 +23,53 @@ fetch.interceptors.response.use(({ data }) => {
         data.message
     return Promise.reject({ status, message: msg })
 });
-class HttpFetch<T extends HttpFetchTemplate = any>{
+export class HttpFetch<P = any, D = any, R = any>{
     private readonly source = axios.CancelToken.source()
     private constructor(
         private readonly url: string,
-        private readonly method: Method = "GET",
-        private data: any = undefined,
-    ) {
+        private readonly method: Method,
+        private readonly data?: any
+    ) { }
+    public static make<T extends string>(url: T, method: Method = "GET") {
+        type QueryElements = List.Omit<String.Split<T, ":">, 0>
+        type QueryParams = Union.Merge<{
+            [QueryElement in QueryElements[number]]: {
+                [key in String.Split<QueryElement, "/">[0]]: string
+            }
+        }[QueryElements[number]]>
+        return new HttpFetch<QueryParams, any, any>(url, method)
     }
-    public static setCookie(cookie: string) {
-        cookies = cookie;
+    public RE<D, R>() {
+        return new HttpFetch<P, D, R>(this.url, this.method, this.data);
     }
-    private errCallback = (err) => Promise.reject<any>(err)
-    private resultCallback = (data: T["res"]) => Promise.resolve(data);
-    public setErrorCallback(callback: typeof this.errCallback) {
-        this.errCallback = callback;
-        const self = new HttpFetch(this.url, this.method);
-        self.data = this.data;
-        self.errCallback = callback;
-        self.resultCallback = this.resultCallback;
-        return self;
-    }
-    public setResultCallback(callback: typeof this.resultCallback) {
-        this.resultCallback = callback;
-        const self = new HttpFetch(this.url, this.method);
-        self.data = this.data;
-        self.errCallback = this.errCallback;
-        self.resultCallback = callback;
-        return self;
-    }
-    public static get<T extends HttpFetchTemplate>(url: string) {
-        return new HttpFetch<T>(url, "GET");
-    }
-    public static post<T extends HttpFetchTemplate>(url: string) {
-        return new HttpFetch<T>(url, "POST")
-    }
-    public setData(data: T["body"]) {
-        return new HttpFetch(
+    public setData(data: D, parse = true) {
+        return new HttpFetch<P, D, R>(
             this.url,
             this.method,
-            typeof data === "function" ? data : stringify(data)
+            parse ? stringify(data) : data
         )
     }
-    public params(param: T["params"]) {
-        const url = Object.keys(param).reduce((url, key) => {
-            return url.replace(`:${key}`, param[key])
+    public params(params: P) {
+        const url = Object.keys(params).reduce((url, key) => {
+            return url.replace(`:${key}`, params[key])
         }, this.url)
-        return new HttpFetch(
+        return new HttpFetch<P, D, R>(
             url,
             this.method,
             this.data
         )
     }
-    public cancel(message = "中断请求") {
-        this.source.cancel(message)
+    public cancel(msg: string = "中断请求") {
+        this.source.cancel(msg);
     }
     public async commit(
-        callback?: (err: any, data: T["res"]) => void
+        callback?:
+            (err: {
+                status: number,
+                message: string
+            },
+                data: R
+            ) => void
     ) {
         const { url, method, data } = this;
         const http = fetch({
@@ -92,21 +78,10 @@ class HttpFetch<T extends HttpFetchTemplate = any>{
             data
         });
         let err;
-        let result: T["res"]
-        const fn = (e: Promise<any>) => {
-            return new Promise((resolve) => {
-                e.then((data) => {
-                    result = data;
-                }).catch((e) => {
-                    err = e;
-                }).finally(() => {
-                    resolve("")
-                })
-            })
-        };
-        await fn(http);
-        if (!!err) await fn(this.errCallback(err));
-        else if (!!result) await fn(this.resultCallback(result));
+        const result: R = await http.then(e => e.data as R).catch((e) => {
+            err = e
+            return null;
+        });
         if (!!callback) return callback(err, result);
         if (!!err) return Promise.reject(err);
         return result;
@@ -120,4 +95,5 @@ class HttpFetch<T extends HttpFetchTemplate = any>{
         return new HttpFetch(url, method, data);
     }
 }
+
 export default HttpFetch

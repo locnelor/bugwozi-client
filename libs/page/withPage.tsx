@@ -1,5 +1,5 @@
 import { NextPageContext } from "next";
-import HttpFetch from "../http/HttpFetch";
+import HttpFetch, { setCookie } from "../http/HttpFetch";
 import makeStore from "../store";
 import { StoreType } from "../store/interface";
 type withPropsResult<T> = {
@@ -44,7 +44,7 @@ function withPage<T extends DefaultType>(
                     return acc;
                 }, {} as withPropsResult<T>);
             if (isServer || ssr) {
-                HttpFetch.setCookie(ctx.req?.headers.cookie);
+                setCookie(ctx.req?.headers.cookie);
                 for (const key in fetchs) {
                     const data = await fetchs[key].commit().catch((err) => {
                         result[key].err = err;

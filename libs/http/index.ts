@@ -1,13 +1,6 @@
-import HttpFetch from "./HttpFetch"
-import { AccountBasicGetUserInfo } from "./router/account/basic"
-const http = {
-    account: {
-        basic: {
-            getUserInfo: HttpFetch.get<AccountBasicGetUserInfo>("/account/basic/getUserInfo")
-        },
-        post: {
-            article: HttpFetch.post("/account/post/article")
-        }
-    }
-}
-export default http
+export * from "./HttpFetch"
+export * from "./useQuery"
+import { String } from "ts-toolbelt"
+
+export const strFactory = <T extends string>(url: T) =>
+    <S extends string>(s: S) => (url + s) as String.Join<[T, S]>;

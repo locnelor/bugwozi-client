@@ -1,6 +1,7 @@
-import Account from "../../../../type/account";
+import { strFactory } from "../..";
+import HttpFetch from "../../HttpFetch";
+const getUrl = strFactory("api/account/basic/");
 
+//获取用户关注列表
+export const GetAccountFollow = HttpFetch.make(getUrl("follow/:hash_key/:id")).RE<{}, 123>();
 
-export interface AccountBasicGetUserInfo {
-    res: Account
-}

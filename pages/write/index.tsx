@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 import styled from "styled-components";
 import Container from "../../layout/Container";
 import Page from "../../layout/Page";
-import http from "../../libs/http";
 import withPage from "../../libs/page/withPage";
 import dynamic from "next/dynamic";
 import { EditorState } from "draft-js";
