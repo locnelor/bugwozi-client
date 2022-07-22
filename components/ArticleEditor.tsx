@@ -49,7 +49,7 @@ export type pushArticleData = {
     tags: string[],
     cover?: string,
     context: string,
-    isPublic: boolean,
+    isVisible: boolean,
     type: string
 }
 const ArticleEditor: React.FC<{
@@ -63,7 +63,7 @@ const ArticleEditor: React.FC<{
         type: "cover",
         subTitle: null,
         cover: null,
-        isPublic: false,
+        isVisible: false,
         context: undefined
     },
     okText = "提交文章",
@@ -74,7 +74,7 @@ const ArticleEditor: React.FC<{
         const [cover, setCover] = useState<string>(initialValue.cover);
         const [context, setContext] = useState<EditorState>();
         const [subTitle, setSubTitle] = useState(initialValue.subTitle);
-        const [isPublic, setPublic] = useState(initialValue.isPublic);
+        const [isVisible, setPublic] = useState(initialValue.isVisible);
         const [type, setType] = useState(initialValue.type);
         const [loading, setLoading] = useState(false);
         const onChangeTitle = useCallback(({ target: { value } }) => {
@@ -91,16 +91,16 @@ const ArticleEditor: React.FC<{
         }, [context]);
         const subTitleContext = useMemo(() => subTitle === null ? getContextText() : subTitle, [subTitle, context]);
         const onClick = useCallback(async () => {
-            if (title.length > 4) return message.error("请输入至少四位标题");
-            if (!subTitle) return message.error("副标题不得为空");
+            if (title.length < 4) return message.error("请输入至少四位标题");
             if (!tags.length) return message.error("请至少输入一个标签");
             if (type === "cover" && !cover) return message.error("请选择封面");
+            if (!subTitleContext) return message.error("副标题不得为空");
             const options = {
                 title,
                 tags,
                 cover: type === "cover" ? cover : null,
                 context: JSON.stringify(convertToRaw(context.getCurrentContent())),
-                isPublic,
+                isVisible,
                 type,
                 subTitle: subTitleContext
             }
@@ -109,7 +109,7 @@ const ArticleEditor: React.FC<{
                 await onFinish(options);
                 setLoading(false);
             } catch (e) { }
-        }, [title, tags, cover, subTitleContext, isPublic, type]);
+        }, [title, tags, cover, subTitleContext, isVisible, type]);
         const onChangeType = useCallback((e) => {
             setType(e.target.value);
         }, []);
@@ -145,7 +145,7 @@ const ArticleEditor: React.FC<{
                 <Divider dashed />
                 {type === "cover" && <Cover initialValue={cover} onChange={setCover} />}
                 <StyledHeader> 是否公开</StyledHeader>
-                <Switch checked={isPublic} onChange={setPublic} />
+                <Switch checked={isVisible} onChange={setPublic} />
                 <Divider dashed />
                 <Button loading={loading} onClick={onClick}>
                     {okText}

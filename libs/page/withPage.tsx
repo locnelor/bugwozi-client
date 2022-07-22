@@ -1,21 +1,16 @@
 import { NextPageContext } from "next";
+import useProps, { withPropsResult } from "../../hooks/useProps";
 import HttpFetch, { setCookie } from "../http/HttpFetch";
 import makeStore from "../store";
 import { StoreType } from "../store/interface";
-type withPropsResult<T> = {
-    [k in keyof T]: {
-        err: any,
-        json: string,
-        data: T[k] extends HttpFetch ? Awaited<ReturnType<T[k]["commit"]>> : null
-    }
-}
-type DefaultType = { [k in string]: HttpFetch } | null
-type PageComponentType<T> = React.FC<withPropsResult<T>>
+
+type DefaultType = { [k in string]: HttpFetch }
+type PageComponentType<T extends { [k in string]: HttpFetch }> = React.FC<withPropsResult<T>>
 type GetInitialFunction<T> = (
     store: StoreType,
     ctx: NextPageContext
 ) => Promise<T>
-type callbackType<T> = (result: withPropsResult<T>) => {
+type callbackType<T extends { [k in string]: HttpFetch }> = (result: withPropsResult<T>) => {
     redirect?: string,
     notFound?: true
 } | void
@@ -25,8 +20,10 @@ function withPage<T extends DefaultType>(
     cb?: callbackType<T>,
     { ssr } = { ssr: false }
 ) {
-    const WithPage = (props) => {
-        return <PageComponent {...props} />
+    const WithPage = (props: withPropsResult<T>) => {
+        //自动请求未进行ssr的httpFetch
+        const result = useProps(props);
+        return <PageComponent {...result} />
     }
     WithPage.getInitialProps = async (ctx: NextPageContext) => {
         const isServer = !!ctx.req;
@@ -38,6 +35,7 @@ function withPage<T extends DefaultType>(
                     const json = fetchs[key].toJson()
                     acc[key] = {
                         json,
+                        loading: true,
                         data: null,
                         err: null
                     }
@@ -49,6 +47,7 @@ function withPage<T extends DefaultType>(
                     const data = await fetchs[key].commit().catch((err) => {
                         result[key].err = err;
                     });
+                    if (!!data) result[key].loading = false;
                     result[key].data = data;
                 }
             }

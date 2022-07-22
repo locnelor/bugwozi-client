@@ -11,8 +11,6 @@ export default withApp(({
   Component,
   pageProps
 }) => {
-  // const router = useRouter();
-  // console.log(router)
   return (
     <ConfigProvider locale={zhCN} >
       <Component

@@ -39,7 +39,7 @@ export class HttpFetch<P = any, D = any, R = any>{
         }[QueryElements[number]]>
         return new HttpFetch<QueryParams, any, any>(url, method)
     }
-    public RE<D, R>() {
+    public RE<D, R = any>() {
         return new HttpFetch<P, D, R>(this.url, this.method, this.data);
     }
     public setData(data: D, parse = true) {

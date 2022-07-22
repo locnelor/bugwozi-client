@@ -17,5 +17,6 @@ type Article = {
     type: articleCover
     issue_num: number
     article_tags: article_tag[]
+    context?: string
 }
 export default Article

@@ -1,11 +1,15 @@
 import { Col, Row } from "antd";
 import Head from "next/head";
+import Link from "next/link";
+import { useEffect } from "react";
 import styled from "styled-components";
 import ArticleLine from "../components/ArticleLine";
 import StyledLink from "../components/StyledLink";
 import Container from "../layout/Container";
 import Page from "../layout/Page";
+import { GetAccountInfo } from "../libs/http/router/account/basic";
 import withPage from "../libs/page/withPage";
+import { useStoreState } from "../libs/store";
 import Account from "../type/account";
 import Article from "../type/article";
 const SideCard = styled.div`
@@ -108,7 +112,7 @@ export default withPage(null, () => {
                 本周热搜
               </HotTitle>
               {hotList.map(({ keyword }, key) => (
-                <StyledLink href="" key={key}>
+                <StyledLink href="/" key={key}>
                   <HotItem key={key}>
                     <HotItemKey>{key + 1}、</HotItemKey>
                     <HotItemContext>{keyword}</HotItemContext>

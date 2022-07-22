@@ -1,5 +1,5 @@
 export * from "./HttpFetch"
-export * from "./useQuery"
+export * from "../../hooks/useQuery"
 import { String } from "ts-toolbelt"
 
 export const strFactory = <T extends string>(url: T) =>

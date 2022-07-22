@@ -12,8 +12,8 @@ const Layout = styled.div`
     margin-bottom:10px;
 `
 const Side = styled.img`
-    max-height:120px;
-    max-width:200px;
+    height:120px;
+    width:200px;
     padding-left:10px;
 `
 const Container = styled.div`

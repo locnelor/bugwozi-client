@@ -28,8 +28,8 @@ const Header = () => {
         }
     } = useStoreState();
     const menu = [{
-        name: "文章",
-        href: "/article"
+        name: "精华",
+        href: "/anthology"
     }, {
         name: "制造师们",
         href: "/creators"
