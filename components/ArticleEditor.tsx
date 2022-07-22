@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Radio, Switch } from "antd";
+import { Button, Divider, Input, message, Radio, Switch } from "antd";
 import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import Container from "../layout/Container";
@@ -76,6 +76,7 @@ const ArticleEditor: React.FC<{
         const [subTitle, setSubTitle] = useState(initialValue.subTitle);
         const [isPublic, setPublic] = useState(initialValue.isPublic);
         const [type, setType] = useState(initialValue.type);
+        const [loading, setLoading] = useState(false);
         const onChangeTitle = useCallback(({ target: { value } }) => {
             if (value.length > 40) return;
             setTitle(value);
@@ -89,7 +90,11 @@ const ArticleEditor: React.FC<{
             return text.join(" ").slice(0, 100);
         }, [context]);
         const subTitleContext = useMemo(() => subTitle === null ? getContextText() : subTitle, [subTitle, context]);
-        const onClick = useCallback(() => {
+        const onClick = useCallback(async () => {
+            if (title.length > 4) return message.error("请输入至少四位标题");
+            if (!subTitle) return message.error("副标题不得为空");
+            if (!tags.length) return message.error("请至少输入一个标签");
+            if (type === "cover" && !cover) return message.error("请选择封面");
             const options = {
                 title,
                 tags,
@@ -99,7 +104,11 @@ const ArticleEditor: React.FC<{
                 type,
                 subTitle: subTitleContext
             }
-            onFinish(options);
+            try {
+                setLoading(true);
+                await onFinish(options);
+                setLoading(false);
+            } catch (e) { }
         }, [title, tags, cover, subTitleContext, isPublic, type]);
         const onChangeType = useCallback((e) => {
             setType(e.target.value);
@@ -138,7 +147,7 @@ const ArticleEditor: React.FC<{
                 <StyledHeader> 是否公开</StyledHeader>
                 <Switch checked={isPublic} onChange={setPublic} />
                 <Divider dashed />
-                <Button onClick={onClick}>
+                <Button loading={loading} onClick={onClick}>
                     {okText}
                 </Button>
             </StyledContainer>
