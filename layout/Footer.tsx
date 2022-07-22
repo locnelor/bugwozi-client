@@ -1,4 +1,5 @@
 import { Divider, Layout } from "antd";
+import { useMemo } from "react";
 import styled from "styled-components";
 import StyledLink from "../components/StyledLink";
 import useKGNB from "../hooks/useKGNB";
@@ -6,6 +7,7 @@ import Container from "./Container";
 const StyledFooter = styled(Layout.Footer)`
     background:#fff;
     font-size:12px;
+    margin-top:10px;
 `
 const StyledContainer = styled(Container)`
     display:flex;
@@ -16,37 +18,37 @@ const Item = styled.div`
     margin-right:5px;
 `
 const Footer = () => {
-    const list = [
+    const kgnb = useKGNB();
+    const list = useMemo(() => [
         {
             name: "冀ICP备号3141592653",
-            href: ""
+            href: "/"
         },
-        { elem: <Divider type="vertical" /> },
+        { elem: true },
         {
             name: "友情链接",
-            href: ""
+            href: "/links"
         },
-        { elem: <Divider type="vertical" /> },
+        { elem: true },
         {
             name: "kgnb",
             href: "/kgnb"
         },
-        { elem: <Divider type="vertical" /> },
+        { elem: true },
         {
             name: "关于",
             href: "/about"
         },
-        { elem: <Divider type="vertical" /> },
+        { elem: true },
         {
             name: "投喂",
-            href: ""
+            href: "/feeding"
         }
-    ];
-    const kgnb = useKGNB();
+    ], []);
     return (
         <StyledFooter>
             <StyledContainer flex>
-                {list.map(({ name, href, elem }, key) => !!elem ? elem : (
+                {list.map(({ name, href, elem }, key) => !!elem ? <Divider type="vertical" key={key} /> : (
                     <Item key={key}>
                         <StyledLink href={href}>
                             {name}
