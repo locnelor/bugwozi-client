@@ -32,7 +32,6 @@ class MyDocument extends Document {
                 <Head>
                     <link rel="stylesheet" href="/antd.min.css" />
                     <link rel="stylesheet" href="/public.css" />
-                    <link rel="stylesheet" href="/index.css" />
                     <link rel="stylesheet" href="/atom-one-dark.css" />
                 </Head>
                 <body>

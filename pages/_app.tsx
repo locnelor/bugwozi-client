@@ -1,8 +1,7 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/lib/locale-provider/zh_CN'
-import { useRouter } from 'next/router'
-import http from '../libs/http'
-import HttpFetch from '../libs/http/HttpFetch'
+import { setCookie } from '../libs/http/HttpFetch'
+import { GetAccountInfo } from '../libs/http/router/account/basic'
 import withApp from '../libs/page/withApp'
 import { StoreActionType } from '../libs/store/interface'
 
@@ -24,8 +23,8 @@ export default withApp(({
 }, async (store, ctx) => {
   if (!!ctx.req) {
     const cookie = ctx.req.headers.cookie;
-    HttpFetch.setCookie(cookie);
-    const user = await http.account.basic.getUserInfo.commit().catch((e) => {
+    setCookie(cookie);
+    const user = await GetAccountInfo.commit().catch((e) => {
     });
     store.dispatch({
       type: StoreActionType.SetUser,

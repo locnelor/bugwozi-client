@@ -31,12 +31,6 @@ const Header = () => {
         name: "文章",
         href: "/article"
     }, {
-        name: "精华",
-        href: "/list"
-    }, {
-        name: "问题",
-        href: "/issue"
-    }, {
         name: "制造师们",
         href: "/creators"
     }];

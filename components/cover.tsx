@@ -9,10 +9,12 @@ const StyledCanvas = styled.canvas`
 
 const Cover: React.FC<{
     onChange: (base64?: string) => void,
+    initialValue: string,
     href?: string
 }> = ({
     onChange,
-    href
+    href,
+    initialValue
 }) => {
         const ref = useRef<HTMLCanvasElement>();
         const [width, height] = [200, 120];
@@ -41,7 +43,19 @@ const Cover: React.FC<{
             clear();
             if (!href) return;
             //图片链接转base64后渲染到canvas
-        }, [href])
+        }, [href]);
+        useEffect(() => {
+            if (!!initialValue) {
+                try {
+                    const img = new Image();
+                    img.src = initialValue;
+                    img.onload = () => {
+                        const car = ref.current.getContext("2d");
+                        car.drawImage(img, 0, 0);
+                    }
+                } catch (e) { }
+            }
+        }, [])
         return (
             <StyledCanvas
                 onClick={onClick}

@@ -38,8 +38,8 @@ const Container = styled.div<{ padding?: number, flex?: boolean }>`
   ${media.xl`
     max-width: 1152px;
   `}
-  ${media.xxl`
-    max-width: 1344px;
-  `}
+  // ${media.xxl`
+  //   max-width: 1344px;
+  // `}
 `
 export default Container
