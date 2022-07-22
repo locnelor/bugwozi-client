@@ -7,7 +7,7 @@ import Container from "./Container";
 const StyledFooter = styled(Layout.Footer)`
     background:#fff;
     font-size:12px;
-    margin-top:10px;
+    margin-top:20px;
 `
 const StyledContainer = styled(Container)`
     display:flex;
